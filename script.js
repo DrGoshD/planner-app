@@ -1,48 +1,65 @@
-const timeBlocks = $('.time-block');
-const saveBtn = $('.saveBtn i');
+let container = $('.container');
+let timeBlocks = $('.time-block');
+let saveButton = $('.saveBtn i');
 
 
-function localStorageEvent () {
-    const savedEv = JSON.parse(localStorage.getItem('saved'));
-    if (savedEv !== null) {
-        timeBlocks.each(function() {
-            const textInput = $(this).find('.textInput textarea');
-            const selectedTime = parseInt($(this).attr('id'));
-            for (var i=0; i < savedEv.length; i++) {
-                if (savedEv[i].hour == selectedTime) {
-                    textInput.val(savedEv[i].text);
-                    break;
-                }
-            }
-        });
-    }
-}
-
-localStorageEvent();
-
-const today = moment();
-$('#currentDay').text(today.format('MMMM Do YYYY'));
-
-// Check current time to see if event has past or is preceding 
-function currentTime() {
-    timeBlocks.each(function(){
-        const textInput = $(this).attr(' textInput');
-        const selectedTime = parseInt($(this).attr('id'));
-        if(selectedTime === currentTime) {
-         textInput.addClass('present');
-        } else if(selectedTime < currentTime) {
-         textInput.addClass('past');
-        } else if (selectedTime > currentTime) {
-         textInput.addClass('future');
+function localStorageEvents() {
+  let savedEvent = JSON.parse(localStorage.getItem("saved"));
+  if (savedEvent !== null) {
+    timeBlocks.each(function() {
+      let description = $(this).find('.description textarea');
+      let selectedTime = parseInt($(this).attr("id"));
+      for (let i = 0; i < savedEvent.length; i++) {
+        if (savedEvent[i].hour == selectedTime) {
+          description.val(savedEvent[i].text);
+          break;
         }
-    })
+      }
+    });
+  }
 }
 
-currentTime();
+localStorageEvents();
+
+// Using moment.js to get current day and hour
+let today = moment();
+$('#currentDay').text(today.format("dddd, Do MMMM YYYY"));
 
 
+let currentTime = moment().hour();
+timeBlocks.each(function() {
+  let description = $(this).find('.description');
+  let selectedTime = parseInt($(this).attr("id"));
+  if (selectedTime === currentTime) {
+    description.addClass("present");
+  } else if (selectedTime < currentTime) {
+    description.addClass("past");
+  } else if (selectedTime > currentTime) {
+    description.addClass("future");
+  }
+});
 
-$('.saveBtn').click(function() {
-    localStorage.setItem('textInput', textInput);
-    document.getElementById('textInput').innerHTML = localStorage.getItem('textInput');
-}); 
+function saveEvent(event) {
+    let description = $(event.target).closest('.time-block').find('.description textarea');
+    let eventDescription = description.val();
+    let hourEvent = $(event.target).closest('.time-block').attr("id");
+    let savedEvent = JSON.parse(localStorage.getItem("saved")) || [];
+    let saved = {
+      hour: hourEvent,
+      text: eventDescription
+    };
+
+    let index = savedEvent.findIndex(function(event) {
+        return event.hour === saved.hour;
+    });
+
+    if (index >= 0) {
+        savedEvent[index] = saved;
+    } else {
+        savedEvent.push(saved);
+    }
+
+    localStorage.setItem("saved", JSON.stringify(savedEvent));
+}
+
+container.on("click", ".saveBtn i", saveEvent);

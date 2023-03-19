@@ -10,4 +10,4 @@ GitHub URL: https://github.com/DrGoshD/planner-app
 
 ## Screenshot to deployed page
 
-![Password Generator](/planner-app/images/Screenshot%202023-03-19%20135007.png/?raw=true)
+![Planner App](/planner-app/images/Screenshot%202023-03-19%20135007.png/?raw=true)
